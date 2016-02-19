@@ -2,11 +2,12 @@
 
 puts "I'm #{Process::pid}."
 
-wanted_process_count = 15
+wanted_process_count = 10
 
-sleeptime = 0.2
+sleeptime = 1
 
 wanted_process_count -= 1 # This main process we have already.
+# (This time, we don't count forks, we count processes.)
 
 always_b = true
 
