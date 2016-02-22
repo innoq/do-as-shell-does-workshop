@@ -69,8 +69,8 @@ again forks 3 copies of itself.
 * The original program and the intermediate forks simply collect
 their children, check their exit value, and exit themselves.
 
-* Of all the lower level runs `ps f T` (or `ps -j -T` on Mac) to
-prove it, all others sleep 1 second.
+* The last of all the lower level runs `ps f T` (or `ps -j -T` on
+Mac) to prove it, all others sleep 1 second.
 
 Change your program so that 100 copies are done at each state,
 leading to a total of 10000 processes.  Let them sleep for 15
