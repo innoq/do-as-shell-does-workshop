@@ -26,6 +26,13 @@ Now, consider the pipeline
 
 (You can use other packers such as `bzip2` or `xz`.)
 
+It produces the output:
+
+```
+gzip: stdin: invalid compressed data--crc error
+1000000 1000000 6888896
+```
+
 The `zcat` clearly knows there is a problem, **but the pipeline
 as a whole succeeds**.  The `wc` gets wrong input.
 

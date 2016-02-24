@@ -2,15 +2,16 @@
 
 children_pids = []
 
-wanted_fork_count = 10000
+wanted_fork_count = 20
 
 # On my laptop, one fork takes a little less than 1 ms,
 # when this script does a lot of them.
-# Sleep long enough so the firstly-created processes
-# are still likely to sleep while the last process is created.
+# Sleep long enough, so the firstly-created processes
+# are likely to still sleep
+# while the last process is created.
+# (Strictly speaking, this is a race condition.)
 sleep_time = 1 + wanted_fork_count * 0.0015
 $stderr.puts "Sleep time is #{sleep_time} s."
-# (Strictly speaking, this is a race condition.)
 
 while 2 <= wanted_fork_count
   child_pid = fork
@@ -41,7 +42,7 @@ all_well = true
 children_pids.each do |child_pid|
   Process::wait child_pid
   if not $?.success?
-    $stderr.puts "#{$?.pid} unhappy, exit status {$?.exitstatus}"
+    $stderr.puts "ERROR #{$?.pid} with {$?.exitstatus}"
     all_well = false
   end
 end

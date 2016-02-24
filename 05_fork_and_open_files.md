@@ -2,13 +2,22 @@
 
 ## Prelude: Writing a file in ruby
 
-yyi write
+yyinoout write
 
 ## What do you expect?
 
 will be the content of `write_conflict.out` after this:
 
-yyi write_conflict
+yyinoout write_conflict
+
+It is:
+
+```
+I'm the parent, 24778.
+I'm the child, 24780.
+I'm the parent, 24778.
+Child ok.
+```
 
 ## WTF?
 

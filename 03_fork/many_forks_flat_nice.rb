@@ -8,7 +8,7 @@ Process.setpriority(Process::PRIO_PROCESS,0,19)
 
 
 newnice = Process.getpriority(Process::PRIO_PROCESS,0)
-$stderr.puts "Nice value increased from #{oldnice} to #{newnice}."
+$stderr.puts "Nice from #{oldnice} to #{newnice}."
 
 # Now same as we had:
 

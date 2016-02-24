@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-$stderr.puts "I am #{Process::pid} about to call fork and exec."
+$stderr.puts "#{Process::pid} about to fork and exec."
 
 child_pid = fork
 
@@ -13,6 +13,6 @@ if child_pid.nil?
 else
   Process::wait(child_pid)
   if not $?.success?
-    raise "ps ran into error, exit sstatus #{$?.exitstatus}."
+    raise "ERROR ps has #{$?.exitstatus}."
   end
 end

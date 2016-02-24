@@ -12,20 +12,22 @@ yyi basic_fork
 
 You can do many forks.
 
-There are 2^16 = 65536 process ids in Linux, which presents an
-upper limit.  Several thousands is no problem.
-
 yyi many_forks_flat
 
-## ...and a word of warning
+There are 2^16 = 65536 process ids in Linux, which presents an
+upper limit.  Several thousands is no problem for Linux.  But it
+may be for you...
+
+## A word of warning
 
 The Linux kernel dutifully distributes CPU attention *evenly*
 among processes that have work to do.
 
-Leaving next to nothing for your UI session.
+If you have several thousands of those, your UI session is just
+one or a few among these many, so it receives only a very tiny
+fraction of CPU attention.
 
-(If those UI processes are not distinguished among the thousands
-of processes demanding CPU attention.)
+Your laptop becomes utterly unresponsive:
 
 **Too many active processes make your system unusable.**
 

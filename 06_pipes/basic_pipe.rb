@@ -24,6 +24,6 @@ end
 writeMe.close
 
 Process.wait child_pid
-raise "Unhappy child, its exitvalue was #{$?.exitstatus}" unless $?.success?
+raise "ERROR child: #{$?.exitstatus}" unless $?.success?
 
 

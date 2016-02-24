@@ -20,7 +20,8 @@ Process.wait child_pid
 if $?.success?
   $stderr.puts "Child exited successfully."
 elsif $?.signaled?
-  $stderr.puts "Child terminated by signal #{Signal.signame($?.termsig)}."
+  $stderr.puts "Child terminated by signal " +
+               "#{Signal.signame($?.termsig)}."
 else
   $stderr.puts "Child exit status #{$?.exitstatus}."
 end

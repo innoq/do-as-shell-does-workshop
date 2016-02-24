@@ -2,19 +2,18 @@
 
 $stderr.puts "I'm #{Process::pid}."
 
-pid = fork
-$stderr.puts "I have #{pid.inspect} and I'm #{Process::pid}"
+child_pid = fork
+$stderr.puts "#{Process::pid} has #{child_pid.inspect}"
 
-if pid.nil?
+if child_pid.nil?
   # I'm the child
-  $stderr.puts "I'm #{Process::pid} about to exit with 39."
+  $stderr.puts "#{Process::pid} about to exit 39."
   exit 39
 else
   # I'm the parent
-  $stderr.puts "Waiting for #{pid} from #{Process::pid}"
-  Process::wait(pid)
+  $stderr.puts "#{Process::pid} waits for #{child_pid}"
+  Process::wait child_pid
   
-  # process $? same way as we are used to by now:
-  $stderr.puts "Done waiting for #{pid} from #{Process::pid}:" +
+  $stderr.puts "#{Process::pid} reaped #{child_pid}:" +
                " #{$?.pid} has #{$?.exitstatus}."
 end

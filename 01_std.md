@@ -20,24 +20,6 @@ The place for human-consumable output and all things "logging".
 This is the fundamental idea of the "pipes and filters"
 architecture.
 
-## Beginner's mistake
-
-It is bad style to put logging information or error messages to
-`stdout` instead of `stderr`.
-
-## Examples
-
-If called with no argument, `gzip --verbose` compresses `stdin`
-to `stderr` and gives some statistical information on `stdout`.
-
-`od -c` converts binary data on `stdin` to a readable dump format
-on `stdout`.
-
-`grep blah` filters copies all lines from `stdin` to `stdout`
-that contain the string `blah`, and ignores all other lines.
-
-And so on, and so forth.
-
 ## Redirection with shell
 
 In `bash` and similar shells:
@@ -62,7 +44,25 @@ to `stdout` of `command1` and the reading end to `stdin` of
 `command1 2>&1` redirects `stderr` to add its stuff to wherever
 `stdout` writes to.
 
-## Exercise
+## Beginner's mistake
+
+It is bad style to put logging information or error messages to
+`stdout` instead of `stderr`.
+
+## Examples
+
+If called with no argument, `gzip --verbose` compresses `stdin`
+to `stdout` and gives some statistical information on `stderr`.
+
+`od -c` converts binary data on `stdin` to some dump format
+on `stdout`.
+
+`grep blah` filters copies all lines from `stdin` to `stdout`
+that contain the string `blah`, and ignores all other lines.
+
+And so on, and so forth.
+
+## Exercises
 
 * Write a little script that writes "Hello, " to `stdout` and
   "world!" to `stderr`.

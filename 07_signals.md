@@ -6,24 +6,24 @@ provide an asynchronous trigger mechanism.
 
 There are many signals.  The more commonly encountered are:
 
-num |   name | description
-----|--------|------------
-  1 | `HUP`  | send to a process when the terminal is closed
-  2 | `INT`  | interrupts a process (usually `^C`)
-  9 | `KILL` | kills a process - no defense.
- 11 | `SEGV` | process attempts to access non-existing memory
- 13 | `PIPE` | attempt to write to a pipe without reader
-  * | `USR1` | user-defined signal.
-  * | `CONT` | Continues a process after stop.
-  * | `STOP` | Stops a process (usually `^Z`)
+num |   name   | description
+----|----------|------------
+  1 | **HUP**  | send to a process when the terminal is closed
+  2 | **INT**  | interrupts a process (usually `^C`)
+  9 | **KILL** | kills a process - no defense.
+ 11 | **SEGV** | process attempts to access non-existing memory
+ 13 | **PIPE** | attempt to write to a pipe without reader
+  * | **USR1** | user-defined signal.
+  * | **CONT** | Continues a process after stop.
+  * | **STOP** | Stops a process (usually `^Z`)
 
-A signal usually terminates the process.  Exceptions are `STOP`
-and `CONT`.  The process can choose to react differently or
-ignore most signals (exceptions: `STOP` and `KILL` are handled by
-the operating system, the process never sees them).
+A signal usually terminates the process.  Exceptions are **STOP**
+and **CONT**.  The process can choose to react differently or
+ignore most signals (exceptions: **STOP** and **KILL** are
+handled by the operating system, the process never sees them).
 
-Signal names may be preceded with a `SIG` without change of
-meaning.  So `SIGHUP` and `HUP` are synonymous.
+Signal names may be preceded with a **SIG** without change of
+meaning.  So **SIGHUP** and **HUP** are synonymous.
 
 The signal numbers are valid only for Linux, they may be
 different on Mac or other platforms.  Those marked with `*` are

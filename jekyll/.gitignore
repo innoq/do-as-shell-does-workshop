@@ -1,0 +1,7 @@
+_site
+.sass-cache
+.jekyll-metadata
+# This is brutal:
+0*.md
+index.md
+about/images/CC_logo_88x31.png

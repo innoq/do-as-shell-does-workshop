@@ -2,6 +2,7 @@
 
 $stderr.puts "I'm #{Process::pid}."
 
-whatsthis = fork
+child_pid = fork
 
-$stderr.puts "I have #{whatsthis.inspect} and I'm #{Process::pid}."
+$stderr.puts "I have #{child_pid.inspect} " +
+             "and I'm #{Process::pid}."

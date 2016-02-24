@@ -20,7 +20,8 @@ Process.kill('INT', child_pid)
 Process.wait child_pid
 
 if $?.signaled?
-  $stderr.puts "Child terminated by signal #{Signal.signame($?.termsig)}."
+  $stderr.puts "Child terminated by signal " +
+               "#{Signal.signame($?.termsig)}."
 elsif $?.success?
   $stderr.puts "Child exited successfully."
 else

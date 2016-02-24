@@ -1,7 +1,5 @@
 #!/usr/bin/env ruby
 
-child_pid = nil
-
 File.open "write_conflict.out", "w" do |file|
   file.puts "I'm the parent, #{Process.pid}."
   child_pid = fork
