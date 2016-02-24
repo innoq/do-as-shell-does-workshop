@@ -22,7 +22,7 @@ architecture.
 
 ## Beginner's mistake
 
-It is wrong to put logging information or error messages to
+It is bad style to put logging information or error messages to
 `stdout` instead of `stderr`.
 
 ## Examples
@@ -33,13 +33,19 @@ to `stderr` and gives some statistical information on `stdout`.
 `od -c` converts binary data on `stdin` to a readable dump format
 on `stdout`.
 
+`grep blah` filters copies all lines from `stdin` to `stdout`
+that contain the string `blah`, and ignores all other lines.
+
+And so on, and so forth.
+
 ## Redirection with shell
 
 In `bash` and similar shells:
 
 `command < file` redirects `stdin` from file.
 
-`command < /dev/null` essentially closes `stdin`.
+`command < /dev/null` essentially closes `stdin` (any read will
+return EOF).
 
 `command > file` redirects `stdout` to file.
 
@@ -58,7 +64,10 @@ to `stdout` of `command1` and the reading end to `stdin` of
 
 ## Exercise
 
-* To comply with these conventions, where should your scripting
-  language put exception information?  Verify what it actually
-  does.
+* Write a little script that writes "Hello, " to `stdout` and
+  "world!" to `stderr`.
+
+* To comply with the convention, where should your scripting
+  language put information from any exception you might raise?
+  Verify.
 
