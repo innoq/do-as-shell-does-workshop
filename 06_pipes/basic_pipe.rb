@@ -9,7 +9,7 @@ if child_pid.nil?
   # child process
   writeMe.close
   readMe.each_line do |line|
-    puts "child read: #{line}"
+    $stderr.puts "child read: #{line}"
   end
   exit 0
 end
@@ -17,7 +17,7 @@ end
 # parent process
 readMe.close
 (1 .. 20).each do |i|
-  puts "parent writes #{i}"
+  $stderr.puts "parent writes #{i}"
   writeMe.write "This is the wonderful line #{i}\n"
   # sleep 0.01
 end

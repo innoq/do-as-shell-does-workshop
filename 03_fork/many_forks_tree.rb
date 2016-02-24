@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-puts "I'm #{Process::pid}."
+$stderr.puts "I'm #{Process::pid}."
 
 wanted_process_count = 10
 

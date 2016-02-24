@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-puts "I am #{Process::pid} about to call spawn."
+$stderr.puts "I am #{Process::pid} about to call spawn."
 
 child_pid = spawn 'ps', 'f', 'T'
 

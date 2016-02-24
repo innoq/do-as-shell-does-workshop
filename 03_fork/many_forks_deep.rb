@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-puts "I'm #{Process::pid}."
+$stderr.puts "I'm #{Process::pid}."
 
 wanted_fork_count = 15
 
@@ -14,7 +14,11 @@ while 0 < wanted_fork_count
     end
   else
     # I'm the parent
+
+    # My children will work for me:
     wanted_fork_count = 0
+
+    # Just wait for the child to be done:
     Process::wait child_pid
   end
 end

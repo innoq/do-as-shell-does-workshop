@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-puts "I am #{Process::pid} about to call fork and exec."
+$stderr.puts "I am #{Process::pid} about to call fork and exec."
 
 child_pid = fork
 

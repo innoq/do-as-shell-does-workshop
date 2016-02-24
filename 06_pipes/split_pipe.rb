@@ -5,7 +5,7 @@ junk = "x"
 (1 .. 11).each do |i|
   junk = "#{junk}#{junk}#{junk}"
 end
-puts "junk is #{junk.length} byte long"
+$stderr.puts "junk is #{junk.length} byte long"
 
 readMe, writeMe = IO.pipe
 
@@ -22,7 +22,7 @@ if child_pid.nil?
   readMe.close
   read_end_time = Time.now
   d = read_end_time - read_start_time
-  puts "Total read: #{total_read} bytes in #{d} s, " +
+  $stderr.puts "Total read: #{total_read} bytes in #{d} s, " +
        "#{total_read / 1024.0 / 1024.0 / d} MByte/s."
   exit 0
 end

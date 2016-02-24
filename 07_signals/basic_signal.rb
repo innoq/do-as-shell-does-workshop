@@ -13,9 +13,9 @@ Process.kill 'INT', child_pid
 Process.wait child_pid
 
 if $?.success?
-  puts "Child exited successfully."
+  $stderr.puts "Child exited successfully."
 elsif $?.signaled?
-  puts "Child terminated by #{Signal.signame($?.termsig)}."
+  $stderr.puts "Child terminated by #{Signal.signame($?.termsig)}."
 else
-  puts "Child exit status #{$?.exitstatus}."
+  $stderr.puts "Child exit status #{$?.exitstatus}."
 end

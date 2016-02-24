@@ -1,5 +1,12 @@
 #!/usr/bin/env ruby
 
+# Produce a string 2 ** 16 = 65536 byte long
+junk = " "
+(1 .. 16).each do |i|
+  junk = "#{junk}#{junk}"
+end
+$stderr.puts "junk is #{junk.length} byte long"
+
 readMe, writeMe = IO.pipe
 
 # Parent writes to child in chunks of 65536 bytes
@@ -7,26 +14,23 @@ child_pid = fork
 if child_pid.nil?
   # child process
   writeMe.close
-  sleep 2
+  read_start_time = Time.now
   total_read = 0
   while buf = readMe.read(65536)
     total_read += buf.length
   end
   readMe.close
+  read_end_time = Time.now
+  d = read_end_time - read_start_time
+  $stderr.puts "Total read: #{total_read} bytes in #{d} s, " +
+       "#{total_read / 1024.0 / 1024.0 / d} MByte/s."
   exit 0
 end
 
 # parent process
 readMe.close
-(1 .. 10000000).each do |i|
-  write_start_time = Time.now
-  writeMe.write(" ")
-  writeMe.flush
-  write_end_time = Time.now
-  if 0.1 < write_end_time - write_start_time
-    puts "#{i-1} byte could be written quickly."
-    break
-  end
+(1 .. 100000).each do |i|
+  writeMe.write junk
 end
 writeMe.close
 
