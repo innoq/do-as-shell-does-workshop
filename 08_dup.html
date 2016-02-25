@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>dup</title>
+  <meta name="description" content="Workshop material for innoQ event 2016-02-25.
+">
+
+  <link rel="stylesheet" href="/do-as-shell-does-workshop/css/main.css">
+  <link rel="canonical" href="http://innoq.github.io//do-as-shell-does-workshop/08_dup.html">
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/do-as-shell-does-workshop/">Do as the shell does.</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+            
+          <a class="page-link" href="/do-as-shell-does-workshop/00_init.html">init</a>
+            
+          
+        
+          
+            
+          <a class="page-link" href="/do-as-shell-does-workshop/01_std.html">std</a>
+            
+          
+        
+          
+            
+          <a class="page-link" href="/do-as-shell-does-workshop/02_system_and_exit_values.html">system_and_exit_values</a>
+            
+          
+        
+          
+            
+          <a class="page-link" href="/do-as-shell-does-workshop/03_fork.html">fork</a>
+            
+          
+        
+          
+            
+          <a class="page-link" href="/do-as-shell-does-workshop/04_exec.html">exec</a>
+            
+          
+        
+          
+            
+          <a class="page-link" href="/do-as-shell-does-workshop/05_fork_and_open_files.html">fork_and_open_files</a>
+            
+          
+        
+          
+            
+          <a class="page-link" href="/do-as-shell-does-workshop/06_pipes.html">pipes</a>
+            
+          
+        
+          
+            
+          <a class="page-link" href="/do-as-shell-does-workshop/07_signals.html">signals</a>
+            
+          
+        
+          
+            
+          <a class="page-link" href="/do-as-shell-does-workshop/08_dup.html">dup</a>
+            
+          
+        
+          
+            
+          <a class="page-link" href="/do-as-shell-does-workshop/about/">About</a>
+            
+          
+        
+          
+            
+          <a class="page-link" href="/do-as-shell-does-workshop/">Main page</a>
+            
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <article class="section">
+
+  <div class="section-content">
+    <h1 id="dup-aka-reopen">Dup (aka “reopen”)</h1>
+
+<p>The missing piece: How to connect a pipe to either <code class="highlighter-rouge">stdin</code> or <code class="highlighter-rouge">stdout</code>?</p>
+
+<p>This is the system call <code class="highlighter-rouge">dup2</code>, see <code class="highlighter-rouge">man 2 dup2</code>.  In Ruby, this is called <a href="http://ruby-doc.org/core-2.2.3/IO.html#method-i-reopen"><code class="highlighter-rouge">reopen</code></a>.</p>
+
+<h2 id="example">Example</h2>
+
+<p>File <code class="highlighter-rouge">08_dup/basic_dup.rb</code>:</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#!/usr/bin/env ruby</span>
+
+<span class="n">readMe</span><span class="p">,</span> <span class="n">writeMe</span> <span class="o">=</span> <span class="no">IO</span><span class="p">.</span><span class="nf">pipe</span>
+
+<span class="n">child_pid</span> <span class="o">=</span> <span class="nb">fork</span>
+
+<span class="k">if</span> <span class="n">child_pid</span><span class="p">.</span><span class="nf">nil?</span>
+  <span class="vg">$stderr</span><span class="p">.</span><span class="nf">puts</span> <span class="s2">"Child is at </span><span class="si">#{</span><span class="no">Process</span><span class="p">.</span><span class="nf">pid</span><span class="si">}</span><span class="s2">"</span>
+
+  <span class="n">writeMe</span><span class="p">.</span><span class="nf">close</span>
+
+  <span class="c1"># Close $stdin, and reopen it to be a copy of readMe:</span>
+  <span class="vg">$stdin</span><span class="p">.</span><span class="nf">reopen</span><span class="p">(</span><span class="n">readMe</span><span class="p">)</span> <span class="c1"># The system call is dup2.</span>
+
+  <span class="c1"># One is enough:</span>
+  <span class="n">readMe</span><span class="p">.</span><span class="nf">close</span>
+
+  <span class="c1"># Now whatever the parent writes to its end of the pipe</span>
+  <span class="c1"># becomes the input of our process.</span>
+
+  <span class="c1"># Dump that input:</span>
+  <span class="nb">exec</span> <span class="s1">'od'</span><span class="p">,</span> <span class="s1">'-c'</span>
+<span class="k">end</span>
+
+<span class="n">readMe</span><span class="p">.</span><span class="nf">close</span>
+<span class="n">writeMe</span><span class="p">.</span><span class="nf">puts</span> <span class="s2">"</span><span class="se">\0\t\n</span><span class="s2">hello</span><span class="se">\v</span><span class="s2">world.</span><span class="se">\n</span><span class="s2">"</span>
+<span class="n">writeMe</span><span class="p">.</span><span class="nf">close</span>
+
+<span class="no">Process</span><span class="p">.</span><span class="nf">wait</span> <span class="n">child_pid</span>
+<span class="k">raise</span> <span class="s2">"od had a problem"</span> <span class="k">unless</span> <span class="vg">$?</span><span class="p">.</span><span class="nf">success?</span></code></pre></figure>
+
+<p>Output is:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>Child is at 3266
+0000000  \0  \t  \n   h   e   l   l   o  \v   w   o   r   l   d   .  \n
+0000020
+
+</code></pre>
+</div>
+
+<p>Programm ran successfully.</p>
+
+<h2 id="exercise">Exercise</h2>
+
+<p>To produce some output, this program counts to <code class="highlighter-rouge">stdout</code>:</p>
+
+<p>File <code class="highlighter-rouge">08_dup/count_to_1m.rb</code>:</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#!/usr/bin/env ruby</span>
+
+<span class="p">(</span><span class="mi">1</span><span class="p">.</span><span class="nf">.</span><span class="mi">1000000</span><span class="p">).</span><span class="nf">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">i</span><span class="o">|</span>
+  <span class="vg">$stdout</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="s2">"</span><span class="si">#{</span><span class="n">i</span><span class="si">}</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+<span class="k">end</span></code></pre></figure>
+
+<p>This program copies everything from <code class="highlighter-rouge">stdin</code> to <code class="highlighter-rouge">stdout</code>, with the
+exception of the 20001st byte, which is deviously changed
+slightly:</p>
+
+<p>File <code class="highlighter-rouge">08_dup/distort_after_20k.rb</code>:</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#!/usr/bin/env ruby</span>
+
+<span class="c1"># copy 20000 byte,</span>
+<span class="c1"># then change one byte,</span>
+<span class="c1"># then copy the rest.</span>
+
+<span class="k">if</span> <span class="p">(</span><span class="n">buf</span> <span class="o">=</span> <span class="vg">$stdin</span><span class="p">.</span><span class="nf">read</span><span class="p">(</span><span class="mi">20000</span><span class="p">))</span>
+  <span class="vg">$stdout</span><span class="p">.</span><span class="nf">write</span> <span class="n">buf</span>
+  <span class="k">if</span> <span class="n">c</span> <span class="o">=</span> <span class="vg">$stdin</span><span class="p">.</span><span class="nf">getbyte</span>
+    <span class="vg">$stdout</span><span class="p">.</span><span class="nf">putc</span><span class="p">(</span><span class="n">c</span> <span class="o">^</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="k">while</span> <span class="n">buf</span> <span class="o">=</span> <span class="vg">$stdin</span><span class="p">.</span><span class="nf">read</span><span class="p">(</span><span class="mi">2</span> <span class="o">**</span> <span class="mi">16</span><span class="p">)</span>
+      <span class="vg">$stdout</span><span class="p">.</span><span class="nf">write</span> <span class="n">buf</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span></code></pre></figure>
+
+<p>Now, consider the pipeline</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>./count_to_1m.rb | gzip | ./distort_after_20k.rb | zcat | wc
+</code></pre>
+</div>
+
+<p>(You can use other packers such as <code class="highlighter-rouge">bzip2</code> or <code class="highlighter-rouge">xz</code>.)</p>
+
+<p>It produces the output:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>gzip: stdin: invalid compressed data--crc error
+1000000 1000000 6888896
+</code></pre>
+</div>
+
+<p>The <code class="highlighter-rouge">zcat</code> clearly knows there is a problem, <strong>but the pipeline
+as a whole succeeds</strong>.  The <code class="highlighter-rouge">wc</code> gets wrong input.</p>
+
+<p>Replace this shell pipeline with a driver script that fails
+cleanly if any of the constituents fail (not just the last, as
+the shell does).</p>
+
+<h2 id="remarks">Remarks</h2>
+
+<p>I recommended <code class="highlighter-rouge">spawn</code> and <code class="highlighter-rouge">system</code> earlier.  It is possible to
+supply them with IO-reopen information, often making it
+unnecessary to call <code class="highlighter-rouge">pipe</code> and <code class="highlighter-rouge">reopen</code>.</p>
+
+<p>There is also a convenience function <code class="highlighter-rouge">popen</code> that makes it easy
+to do IO to and from some command.</p>
+
+<h2 id="suggested-research">Suggested research</h2>
+
+<p>Have a look into</p>
+
+<ul>
+  <li>
+    <p>Non-blocking IO</p>
+  </li>
+  <li>
+    <p>Inetd</p>
+  </li>
+</ul>
+
+  </div>
+
+</article>
+
+
+
+
+<p><a href="07_signals.html">Previous section: 07_signals.html</a></p>
+
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li>Do as the shell does.</li>
+          <li><a href="mailto:Andreas.Krueger@innoQ.com">Andreas.Krueger@innoQ.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <p>Workshop material for innoQ event 2016-02-25.
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

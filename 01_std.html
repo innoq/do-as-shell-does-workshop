@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>std</title>
+  <meta name="description" content="Workshop material for innoQ event 2016-02-25.
+">
+
+  <link rel="stylesheet" href="/do-as-shell-does-workshop/css/main.css">
+  <link rel="canonical" href="http://innoq.github.io//do-as-shell-does-workshop/01_std.html">
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/do-as-shell-does-workshop/">Do as the shell does.</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+            
+          <a class="page-link" href="/do-as-shell-does-workshop/00_init.html">init</a>
+            
+          
+        
+          
+            
+          <a class="page-link" href="/do-as-shell-does-workshop/01_std.html">std</a>
+            
+          
+        
+          
+            
+          <a class="page-link" href="/do-as-shell-does-workshop/02_system_and_exit_values.html">system_and_exit_values</a>
+            
+          
+        
+          
+            
+          <a class="page-link" href="/do-as-shell-does-workshop/03_fork.html">fork</a>
+            
+          
+        
+          
+            
+          <a class="page-link" href="/do-as-shell-does-workshop/04_exec.html">exec</a>
+            
+          
+        
+          
+            
+          <a class="page-link" href="/do-as-shell-does-workshop/05_fork_and_open_files.html">fork_and_open_files</a>
+            
+          
+        
+          
+            
+          <a class="page-link" href="/do-as-shell-does-workshop/06_pipes.html">pipes</a>
+            
+          
+        
+          
+            
+          <a class="page-link" href="/do-as-shell-does-workshop/07_signals.html">signals</a>
+            
+          
+        
+          
+            
+          <a class="page-link" href="/do-as-shell-does-workshop/08_dup.html">dup</a>
+            
+          
+        
+          
+            
+          <a class="page-link" href="/do-as-shell-does-workshop/about/">About</a>
+            
+          
+        
+          
+            
+          <a class="page-link" href="/do-as-shell-does-workshop/">Main page</a>
+            
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <article class="section">
+
+  <div class="section-content">
+    <h1 id="stdin-stdout-stderr">Stdin, Stdout, Stderr</h1>
+
+<p>A UNIX program has three “channels” open (can be pipes, files, a
+terminal…).</p>
+
+<h2 id="stdin">stdin</h2>
+
+<p>The place from which the program reads by default.</p>
+
+<h2 id="stdout">stdout</h2>
+
+<p>The place to which the program writes by default.</p>
+
+<h2 id="stderr">stderr</h2>
+
+<p>The place for human-consumable output and all things “logging”.</p>
+
+<h2 id="discussion">Discussion</h2>
+
+<p>This is the fundamental idea of the “pipes and filters”
+architecture.</p>
+
+<h2 id="redirection-with-shell">Redirection with shell</h2>
+
+<p>In <code class="highlighter-rouge">bash</code> and similar shells:</p>
+
+<p><code class="highlighter-rouge">command1 | command2</code> creates a pipe and hooks up the writing end
+to <code class="highlighter-rouge">stdout</code> of <code class="highlighter-rouge">command1</code> and the reading end to <code class="highlighter-rouge">stdin</code> of
+<code class="highlighter-rouge">command2</code>.  (This is the prototypical filter pipeline.)</p>
+
+<p><code class="highlighter-rouge">command &lt; file</code> redirects <code class="highlighter-rouge">stdin</code> from file.</p>
+
+<p><code class="highlighter-rouge">command &lt; /dev/null</code> essentially closes <code class="highlighter-rouge">stdin</code> (any read will
+return EOF).</p>
+
+<p><code class="highlighter-rouge">command &gt; file</code> redirects <code class="highlighter-rouge">stdout</code> to file.</p>
+
+<p><code class="highlighter-rouge">command &gt; /dev/null</code> ignores <code class="highlighter-rouge">stdout</code>.</p>
+
+<p><code class="highlighter-rouge">command 2&gt; file</code> redirects <code class="highlighter-rouge">stderr</code> to file.</p>
+
+<p><code class="highlighter-rouge">command 2&gt; /dev/null</code> ignores <code class="highlighter-rouge">stderr</code> <em>don’t do that</em>.</p>
+
+<p><code class="highlighter-rouge">command1 2&gt;&amp;1</code> redirects <code class="highlighter-rouge">stderr</code> to add its stuff to wherever
+<code class="highlighter-rouge">stdout</code> writes to.</p>
+
+<h2 id="beginners-mistake">Beginner’s mistake</h2>
+
+<p>It is bad style to put logging information or error messages to
+<code class="highlighter-rouge">stdout</code> instead of <code class="highlighter-rouge">stderr</code>.</p>
+
+<h2 id="examples">Examples</h2>
+
+<p>If called with no argument, <code class="highlighter-rouge">gzip --verbose</code> compresses <code class="highlighter-rouge">stdin</code>
+to <code class="highlighter-rouge">stdout</code> and gives some statistical information on <code class="highlighter-rouge">stderr</code>.</p>
+
+<p><code class="highlighter-rouge">od -c</code> converts binary data on <code class="highlighter-rouge">stdin</code> to some dump format
+on <code class="highlighter-rouge">stdout</code>.</p>
+
+<p><code class="highlighter-rouge">grep blah</code> filters copies all lines from <code class="highlighter-rouge">stdin</code> to <code class="highlighter-rouge">stdout</code>
+that contain the string <code class="highlighter-rouge">blah</code>, and ignores all other lines.</p>
+
+<p>And so on, and so forth.</p>
+
+<h2 id="exercises">Exercises</h2>
+
+<ul>
+  <li>
+    <p>Write a little script that writes “Hello, “ to <code class="highlighter-rouge">stdout</code> and
+“world!” to <code class="highlighter-rouge">stderr</code>.</p>
+  </li>
+  <li>
+    <p>To comply with the convention, where should your scripting
+language put information from any exception you might raise?
+Verify.</p>
+  </li>
+</ul>
+
+  </div>
+
+</article>
+
+
+<p><a href="02_system_and_exit_values.html">Next section: 02_system_and_exit_values.html</a></p>
+
+
+
+<p><a href="00_init.html">Previous section: 00_init.html</a></p>
+
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li>Do as the shell does.</li>
+          <li><a href="mailto:Andreas.Krueger@innoQ.com">Andreas.Krueger@innoQ.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <p>Workshop material for innoQ event 2016-02-25.
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

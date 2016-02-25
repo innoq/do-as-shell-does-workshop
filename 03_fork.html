@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>fork</title>
+  <meta name="description" content="Workshop material for innoQ event 2016-02-25.
+">
+
+  <link rel="stylesheet" href="/do-as-shell-does-workshop/css/main.css">
+  <link rel="canonical" href="http://innoq.github.io//do-as-shell-does-workshop/03_fork.html">
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/do-as-shell-does-workshop/">Do as the shell does.</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+            
+          <a class="page-link" href="/do-as-shell-does-workshop/00_init.html">init</a>
+            
+          
+        
+          
+            
+          <a class="page-link" href="/do-as-shell-does-workshop/01_std.html">std</a>
+            
+          
+        
+          
+            
+          <a class="page-link" href="/do-as-shell-does-workshop/02_system_and_exit_values.html">system_and_exit_values</a>
+            
+          
+        
+          
+            
+          <a class="page-link" href="/do-as-shell-does-workshop/03_fork.html">fork</a>
+            
+          
+        
+          
+            
+          <a class="page-link" href="/do-as-shell-does-workshop/04_exec.html">exec</a>
+            
+          
+        
+          
+            
+          <a class="page-link" href="/do-as-shell-does-workshop/05_fork_and_open_files.html">fork_and_open_files</a>
+            
+          
+        
+          
+            
+          <a class="page-link" href="/do-as-shell-does-workshop/06_pipes.html">pipes</a>
+            
+          
+        
+          
+            
+          <a class="page-link" href="/do-as-shell-does-workshop/07_signals.html">signals</a>
+            
+          
+        
+          
+            
+          <a class="page-link" href="/do-as-shell-does-workshop/08_dup.html">dup</a>
+            
+          
+        
+          
+            
+          <a class="page-link" href="/do-as-shell-does-workshop/about/">About</a>
+            
+          
+        
+          
+            
+          <a class="page-link" href="/do-as-shell-does-workshop/">Main page</a>
+            
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <article class="section">
+
+  <div class="section-content">
+    <h1 id="fork">fork</h1>
+
+<p>What fork is about:</p>
+
+<p>File <code class="highlighter-rouge">03_fork/first_fork.rb</code>:</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#!/usr/bin/env ruby</span>
+
+<span class="vg">$stderr</span><span class="p">.</span><span class="nf">puts</span> <span class="s2">"I'm </span><span class="si">#{</span><span class="no">Process</span><span class="o">::</span><span class="n">pid</span><span class="si">}</span><span class="s2">."</span>
+
+<span class="n">child_pid</span> <span class="o">=</span> <span class="nb">fork</span>
+
+<span class="vg">$stderr</span><span class="p">.</span><span class="nf">puts</span> <span class="s2">"I have </span><span class="si">#{</span><span class="n">child_pid</span><span class="p">.</span><span class="nf">inspect</span><span class="si">}</span><span class="s2"> "</span> <span class="o">+</span>
+             <span class="s2">"and I'm </span><span class="si">#{</span><span class="no">Process</span><span class="o">::</span><span class="n">pid</span><span class="si">}</span><span class="s2">."</span></code></pre></figure>
+
+<p>Output is:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>I'm 3079.
+I have 3083 and I'm 3079.
+I have nil and I'm 3083.
+
+</code></pre>
+</div>
+
+<p>Programm ran successfully.</p>
+
+<p>Parent can retrieve the exit status of child:</p>
+
+<p>File <code class="highlighter-rouge">03_fork/basic_fork.rb</code>:</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#!/usr/bin/env ruby</span>
+
+<span class="vg">$stderr</span><span class="p">.</span><span class="nf">puts</span> <span class="s2">"I'm </span><span class="si">#{</span><span class="no">Process</span><span class="o">::</span><span class="n">pid</span><span class="si">}</span><span class="s2">."</span>
+
+<span class="n">child_pid</span> <span class="o">=</span> <span class="nb">fork</span>
+<span class="vg">$stderr</span><span class="p">.</span><span class="nf">puts</span> <span class="s2">"</span><span class="si">#{</span><span class="no">Process</span><span class="o">::</span><span class="n">pid</span><span class="si">}</span><span class="s2"> has </span><span class="si">#{</span><span class="n">child_pid</span><span class="p">.</span><span class="nf">inspect</span><span class="si">}</span><span class="s2">"</span>
+
+<span class="k">if</span> <span class="n">child_pid</span><span class="p">.</span><span class="nf">nil?</span>
+  <span class="c1"># I'm the child</span>
+  <span class="vg">$stderr</span><span class="p">.</span><span class="nf">puts</span> <span class="s2">"</span><span class="si">#{</span><span class="no">Process</span><span class="o">::</span><span class="n">pid</span><span class="si">}</span><span class="s2"> about to exit 39."</span>
+  <span class="nb">exit</span> <span class="mi">39</span>
+<span class="k">else</span>
+  <span class="c1"># I'm the parent</span>
+  <span class="vg">$stderr</span><span class="p">.</span><span class="nf">puts</span> <span class="s2">"</span><span class="si">#{</span><span class="no">Process</span><span class="o">::</span><span class="n">pid</span><span class="si">}</span><span class="s2"> waits for </span><span class="si">#{</span><span class="n">child_pid</span><span class="si">}</span><span class="s2">"</span>
+  <span class="no">Process</span><span class="o">::</span><span class="n">wait</span> <span class="n">child_pid</span>
+  
+  <span class="vg">$stderr</span><span class="p">.</span><span class="nf">puts</span> <span class="s2">"</span><span class="si">#{</span><span class="no">Process</span><span class="o">::</span><span class="n">pid</span><span class="si">}</span><span class="s2"> reaped </span><span class="si">#{</span><span class="n">child_pid</span><span class="si">}</span><span class="s2">:"</span> <span class="o">+</span>
+               <span class="s2">" </span><span class="si">#{</span><span class="vg">$?</span><span class="p">.</span><span class="nf">pid</span><span class="si">}</span><span class="s2"> has </span><span class="si">#{</span><span class="vg">$?</span><span class="p">.</span><span class="nf">exitstatus</span><span class="si">}</span><span class="s2">."</span>
+<span class="k">end</span></code></pre></figure>
+
+<p>Output is:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>I'm 3086.
+3086 has 3090
+3086 waits for 3090
+3090 has nil
+3090 about to exit 39.
+3086 reaped 3090: 3090 has 39.
+
+</code></pre>
+</div>
+
+<p>Programm ran successfully.</p>
+
+<h2 id="many-forks">Many forks…</h2>
+
+<p>You can do many forks.</p>
+
+<p>File <code class="highlighter-rouge">03_fork/many_forks_flat.rb</code>:</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#!/usr/bin/env ruby</span>
+
+<span class="n">children_pids</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="n">wanted_fork_count</span> <span class="o">=</span> <span class="mi">20</span>
+
+<span class="c1"># On my laptop, one fork takes a little less than 1 ms,</span>
+<span class="c1"># when this script does a lot of them.</span>
+<span class="c1"># Sleep long enough, so the firstly-created processes</span>
+<span class="c1"># are likely to still sleep</span>
+<span class="c1"># while the last process is created.</span>
+<span class="c1"># (Strictly speaking, this is a race condition.)</span>
+<span class="n">sleep_time</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">wanted_fork_count</span> <span class="o">*</span> <span class="mi">0</span><span class="o">.</span><span class="mo">0015</span>
+<span class="vg">$stderr</span><span class="p">.</span><span class="nf">puts</span> <span class="s2">"Sleep time is </span><span class="si">#{</span><span class="n">sleep_time</span><span class="si">}</span><span class="s2"> s."</span>
+
+<span class="k">while</span> <span class="mi">2</span> <span class="o">&lt;=</span> <span class="n">wanted_fork_count</span>
+  <span class="n">child_pid</span> <span class="o">=</span> <span class="nb">fork</span>
+  <span class="k">if</span> <span class="n">child_pid</span><span class="p">.</span><span class="nf">nil?</span>
+    <span class="k">if</span> <span class="mi">2</span> <span class="o">==</span> <span class="n">wanted_fork_count</span>
+      <span class="c1"># Of the 2 processes,</span>
+      <span class="c1"># one is the new child executing this,</span>
+      <span class="c1"># the other one is this:</span>
+      <span class="nb">system</span> <span class="s1">'ps'</span><span class="p">,</span> <span class="s1">'f'</span><span class="p">,</span> <span class="s1">'T'</span> <span class="n">or</span> <span class="k">raise</span> <span class="s2">"Couldn't ps"</span>
+    <span class="k">else</span>
+      <span class="nb">sleep</span> <span class="n">sleep_time</span>
+    <span class="k">end</span>
+    <span class="c1"># Mental exercise:</span>
+    <span class="c1"># What happens when you forget the following line?</span>
+    <span class="nb">exit</span> <span class="mi">0</span>
+  <span class="k">else</span>
+    <span class="c1"># I'm the parent</span>
+    <span class="c1"># Remember the child pid,</span>
+    <span class="c1"># to collect the exit status later:</span>
+    <span class="n">children_pids</span> <span class="o">&lt;&lt;</span> <span class="n">child_pid</span>
+    <span class="c1"># One fork less I still need to do:</span>
+    <span class="n">wanted_fork_count</span> <span class="o">-=</span> <span class="mi">1</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="n">all_well</span> <span class="o">=</span> <span class="kp">true</span>
+
+<span class="n">children_pids</span><span class="p">.</span><span class="nf">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">child_pid</span><span class="o">|</span>
+  <span class="no">Process</span><span class="o">::</span><span class="n">wait</span> <span class="n">child_pid</span>
+  <span class="k">if</span> <span class="n">not</span> <span class="vg">$?</span><span class="p">.</span><span class="nf">success?</span>
+    <span class="vg">$stderr</span><span class="p">.</span><span class="nf">puts</span> <span class="s2">"ERROR </span><span class="si">#{</span><span class="vg">$?</span><span class="p">.</span><span class="nf">pid</span><span class="si">}</span><span class="s2"> with {$?.exitstatus}"</span>
+    <span class="n">all_well</span> <span class="o">=</span> <span class="kp">false</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">raise</span> <span class="s2">"Problem with at least one child."</span> <span class="k">unless</span> <span class="n">all_well</span></code></pre></figure>
+
+<p>Output is:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>Sleep time is 1.03 s.
+  PID TTY      STAT   TIME COMMAND
+ 1062 pts/3    Ss     0:00 /bin/bash --noediting -i
+ 3033 pts/3    Sl+    0:00  \_ ruby /home/andreask/.rvm/gems/ruby-2.3.0/bin/rake
+ 3093 pts/3    Sl+    0:00      \_ ruby ./many_forks_flat.rb
+ 3097 pts/3    Sl+    0:00          \_ ruby ./many_forks_flat.rb
+ 3100 pts/3    Sl+    0:00          \_ ruby ./many_forks_flat.rb
+ 3103 pts/3    Sl+    0:00          \_ ruby ./many_forks_flat.rb
+ 3106 pts/3    Sl+    0:00          \_ ruby ./many_forks_flat.rb
+ 3109 pts/3    Sl+    0:00          \_ ruby ./many_forks_flat.rb
+ 3112 pts/3    Sl+    0:00          \_ ruby ./many_forks_flat.rb
+ 3115 pts/3    Sl+    0:00          \_ ruby ./many_forks_flat.rb
+ 3118 pts/3    Sl+    0:00          \_ ruby ./many_forks_flat.rb
+ 3121 pts/3    Sl+    0:00          \_ ruby ./many_forks_flat.rb
+ 3124 pts/3    Sl+    0:00          \_ ruby ./many_forks_flat.rb
+ 3127 pts/3    Sl+    0:00          \_ ruby ./many_forks_flat.rb
+ 3130 pts/3    Sl+    0:00          \_ ruby ./many_forks_flat.rb
+ 3133 pts/3    Sl+    0:00          \_ ruby ./many_forks_flat.rb
+ 3136 pts/3    Sl+    0:00          \_ ruby ./many_forks_flat.rb
+ 3139 pts/3    Sl+    0:00          \_ ruby ./many_forks_flat.rb
+ 3142 pts/3    Sl+    0:00          \_ ruby ./many_forks_flat.rb
+ 3145 pts/3    Sl+    0:00          \_ ruby ./many_forks_flat.rb
+ 3148 pts/3    Sl+    0:00          \_ ruby ./many_forks_flat.rb
+ 3151 pts/3    Sl+    0:00          \_ ruby ./many_forks_flat.rb
+ 3154 pts/3    R+     0:00              \_ ps f T
+
+</code></pre>
+</div>
+
+<p>Programm ran successfully.</p>
+
+<p>There are 2^16 = 65536 process ids in Linux, which presents an
+upper limit.  Several thousands is no problem for Linux.  But it
+may be for you…</p>
+
+<h2 id="a-word-of-warning">A word of warning</h2>
+
+<p>The Linux kernel dutifully distributes CPU attention <em>evenly</em>
+among processes that have work to do.</p>
+
+<p>If you have several thousands of those, your UI session is just
+one or a few among these many, so it receives only a very tiny
+fraction of CPU attention.</p>
+
+<p>Your laptop becomes utterly unresponsive:</p>
+
+<p><strong>Too many active processes make your system unusable.</strong></p>
+
+<p>Plan A, ahead of time: Increase niceness.</p>
+
+<p>Plan B, after the fact: Reboot forcefully.</p>
+
+<p>File <code class="highlighter-rouge">03_fork/many_forks_flat_nice.rb</code>:</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#!/usr/bin/env ruby</span>
+
+<span class="n">oldnice</span> <span class="o">=</span> <span class="no">Process</span><span class="p">.</span><span class="nf">getpriority</span><span class="p">(</span><span class="no">Process</span><span class="o">::</span><span class="no">PRIO_PROCESS</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="c1"># Set prio to "19",</span>
+<span class="c1"># meaning, "run me only if nothing else wants to run".</span>
+<span class="no">Process</span><span class="p">.</span><span class="nf">setpriority</span><span class="p">(</span><span class="no">Process</span><span class="o">::</span><span class="no">PRIO_PROCESS</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">19</span><span class="p">)</span>
+
+
+<span class="n">newnice</span> <span class="o">=</span> <span class="no">Process</span><span class="p">.</span><span class="nf">getpriority</span><span class="p">(</span><span class="no">Process</span><span class="o">::</span><span class="no">PRIO_PROCESS</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+<span class="vg">$stderr</span><span class="p">.</span><span class="nf">puts</span> <span class="s2">"Nice from </span><span class="si">#{</span><span class="n">oldnice</span><span class="si">}</span><span class="s2"> to </span><span class="si">#{</span><span class="n">newnice</span><span class="si">}</span><span class="s2">."</span>
+
+<span class="c1"># Now same as we had:</span>
+
+<span class="nb">load</span> <span class="s1">'many_forks_flat.rb'</span></code></pre></figure>
+
+<p>Output is:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>Nice from 0 to 19.
+Sleep time is 1.03 s.
+  PID TTY      STAT   TIME COMMAND
+ 1062 pts/3    Ss     0:00 /bin/bash --noediting -i
+ 3033 pts/3    Sl+    0:00  \_ ruby /home/andreask/.rvm/gems/ruby-2.3.0/bin/rake
+ 3155 pts/3    SNl+   0:00      \_ ruby ./many_forks_flat_nice.rb
+ 3159 pts/3    SNl+   0:00          \_ ruby ./many_forks_flat_nice.rb
+ 3162 pts/3    SNl+   0:00          \_ ruby ./many_forks_flat_nice.rb
+ 3165 pts/3    SNl+   0:00          \_ ruby ./many_forks_flat_nice.rb
+ 3168 pts/3    SNl+   0:00          \_ ruby ./many_forks_flat_nice.rb
+ 3171 pts/3    SNl+   0:00          \_ ruby ./many_forks_flat_nice.rb
+ 3174 pts/3    SNl+   0:00          \_ ruby ./many_forks_flat_nice.rb
+ 3177 pts/3    SNl+   0:00          \_ ruby ./many_forks_flat_nice.rb
+ 3180 pts/3    SNl+   0:00          \_ ruby ./many_forks_flat_nice.rb
+ 3183 pts/3    SNl+   0:00          \_ ruby ./many_forks_flat_nice.rb
+ 3186 pts/3    SNl+   0:00          \_ ruby ./many_forks_flat_nice.rb
+ 3189 pts/3    SNl+   0:00          \_ ruby ./many_forks_flat_nice.rb
+ 3192 pts/3    SNl+   0:00          \_ ruby ./many_forks_flat_nice.rb
+ 3195 pts/3    SNl+   0:00          \_ ruby ./many_forks_flat_nice.rb
+ 3198 pts/3    SNl+   0:00          \_ ruby ./many_forks_flat_nice.rb
+ 3201 pts/3    SNl+   0:00          \_ ruby ./many_forks_flat_nice.rb
+ 3204 pts/3    SNl+   0:00          \_ ruby ./many_forks_flat_nice.rb
+ 3207 pts/3    SNl+   0:00          \_ ruby ./many_forks_flat_nice.rb
+ 3210 pts/3    SNl+   0:00          \_ ruby ./many_forks_flat_nice.rb
+ 3213 pts/3    SNl+   0:00          \_ ruby ./many_forks_flat_nice.rb
+ 3216 pts/3    RN+    0:00              \_ ps f T
+
+</code></pre>
+</div>
+
+<p>Programm ran successfully.</p>
+
+<h3 id="exercise-unix-orphanage">Exercise: UNIX orphanage</h3>
+
+<ul>
+  <li>
+    <p>Create a program that prints its pid and then forks,</p>
+  </li>
+  <li>
+    <p>then the parent simply exits immediately
+without waiting for the child,</p>
+  </li>
+  <li>
+    <p>while child waits for a little while (so the parent is surely gone)
+and then calls <code class="highlighter-rouge">ps f l T</code> (or <code class="highlighter-rouge">ps -j -T</code> on Mac).</p>
+  </li>
+</ul>
+
+<p>What do you see?</p>
+
+<h3 id="exercise-how-nice-is-nice-enough">Exercise: How nice is nice enough?</h3>
+
+<p>Experiment a bit, e.g.:</p>
+
+<ul>
+  <li>
+    <p>Is your system responsive when some 10000 processes do
+something simultaneously (even if all they do is <code class="highlighter-rouge">exit 0</code>)
+without nice-value (that is, with the default nice-value 0)?</p>
+  </li>
+  <li>
+    <p>With nice-value 19?</p>
+  </li>
+  <li>
+    <p>How low can you move the nice-value without seeing sluggishness?
+(On my system, with the flat program, a nice-value 11, a parallel-running 
+<code class="highlighter-rouge">xclock -update 1 -norender</code> is visually sluggish, but no longer so with 12).</p>
+  </li>
+</ul>
+
+<h3 id="exercise-dual-layer-fork">Exercise: Dual layer fork</h3>
+
+<ul>
+  <li>
+    <p>Create a program that forks 3 copies of itself, each of which
+again forks 3 copies of itself.</p>
+  </li>
+  <li>
+    <p>The original program and the intermediate forks simply collect
+their children, check their exit value, and exit themselves.</p>
+  </li>
+  <li>
+    <p>The last of all the lower level runs <code class="highlighter-rouge">ps f T</code> (or <code class="highlighter-rouge">ps -j -T</code> on
+Mac) to prove it, all others sleep 1 second.</p>
+  </li>
+</ul>
+
+<p>Change your program so that 100 copies are done at each state,
+leading to a total of 10000 processes.  Let them sleep for 15
+seconds.</p>
+
+  </div>
+
+</article>
+
+
+<p><a href="04_exec.html">Next section: 04_exec.html</a></p>
+
+
+
+<p><a href="02_system_and_exit_values.html">Previous section: 02_system_and_exit_values.html</a></p>
+
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li>Do as the shell does.</li>
+          <li><a href="mailto:Andreas.Krueger@innoQ.com">Andreas.Krueger@innoQ.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <p>Workshop material for innoQ event 2016-02-25.
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

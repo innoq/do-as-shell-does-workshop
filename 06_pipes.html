@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>pipes</title>
+  <meta name="description" content="Workshop material for innoQ event 2016-02-25.
+">
+
+  <link rel="stylesheet" href="/do-as-shell-does-workshop/css/main.css">
+  <link rel="canonical" href="http://innoq.github.io//do-as-shell-does-workshop/06_pipes.html">
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/do-as-shell-does-workshop/">Do as the shell does.</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+            
+          <a class="page-link" href="/do-as-shell-does-workshop/00_init.html">init</a>
+            
+          
+        
+          
+            
+          <a class="page-link" href="/do-as-shell-does-workshop/01_std.html">std</a>
+            
+          
+        
+          
+            
+          <a class="page-link" href="/do-as-shell-does-workshop/02_system_and_exit_values.html">system_and_exit_values</a>
+            
+          
+        
+          
+            
+          <a class="page-link" href="/do-as-shell-does-workshop/03_fork.html">fork</a>
+            
+          
+        
+          
+            
+          <a class="page-link" href="/do-as-shell-does-workshop/04_exec.html">exec</a>
+            
+          
+        
+          
+            
+          <a class="page-link" href="/do-as-shell-does-workshop/05_fork_and_open_files.html">fork_and_open_files</a>
+            
+          
+        
+          
+            
+          <a class="page-link" href="/do-as-shell-does-workshop/06_pipes.html">pipes</a>
+            
+          
+        
+          
+            
+          <a class="page-link" href="/do-as-shell-does-workshop/07_signals.html">signals</a>
+            
+          
+        
+          
+            
+          <a class="page-link" href="/do-as-shell-does-workshop/08_dup.html">dup</a>
+            
+          
+        
+          
+            
+          <a class="page-link" href="/do-as-shell-does-workshop/about/">About</a>
+            
+          
+        
+          
+            
+          <a class="page-link" href="/do-as-shell-does-workshop/">Main page</a>
+            
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <article class="section">
+
+  <div class="section-content">
+    <h1 id="pipes">Pipes</h1>
+
+<p>A pipe is something one process writes to and another process
+reads.  It has two ends: One end can be written to, the other end
+can be read from.</p>
+
+<p>File <code class="highlighter-rouge">06_pipes/basic_pipe.rb</code>:</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#!/usr/bin/env ruby</span>
+
+<span class="n">readMe</span><span class="p">,</span> <span class="n">writeMe</span> <span class="o">=</span> <span class="no">IO</span><span class="p">.</span><span class="nf">pipe</span>
+
+<span class="c1"># Parent writes to child</span>
+
+<span class="n">child_pid</span> <span class="o">=</span> <span class="nb">fork</span>
+<span class="k">if</span> <span class="n">child_pid</span><span class="p">.</span><span class="nf">nil?</span>
+  <span class="c1"># child process</span>
+  <span class="n">writeMe</span><span class="p">.</span><span class="nf">close</span>
+  <span class="n">readMe</span><span class="p">.</span><span class="nf">each_line</span> <span class="k">do</span> <span class="o">|</span><span class="n">line</span><span class="o">|</span>
+    <span class="vg">$stderr</span><span class="p">.</span><span class="nf">puts</span> <span class="s2">"child read: </span><span class="si">#{</span><span class="n">line</span><span class="si">}</span><span class="s2">"</span>
+  <span class="k">end</span>
+  <span class="nb">exit</span> <span class="mi">0</span>
+<span class="k">end</span>
+
+<span class="c1"># parent process</span>
+<span class="n">readMe</span><span class="p">.</span><span class="nf">close</span>
+<span class="p">(</span><span class="mi">1</span> <span class="p">.</span><span class="nf">.</span> <span class="mi">20</span><span class="p">).</span><span class="nf">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">i</span><span class="o">|</span>
+  <span class="vg">$stderr</span><span class="p">.</span><span class="nf">puts</span> <span class="s2">"parent writes </span><span class="si">#{</span><span class="n">i</span><span class="si">}</span><span class="s2">"</span>
+  <span class="n">writeMe</span><span class="p">.</span><span class="nf">write</span> <span class="s2">"This is the wonderful line </span><span class="si">#{</span><span class="n">i</span><span class="si">}</span><span class="se">\n</span><span class="s2">"</span>
+  <span class="c1"># sleep 0.01</span>
+<span class="k">end</span>
+<span class="n">writeMe</span><span class="p">.</span><span class="nf">close</span>
+
+<span class="no">Process</span><span class="p">.</span><span class="nf">wait</span> <span class="n">child_pid</span>
+<span class="k">raise</span> <span class="s2">"ERROR child: </span><span class="si">#{</span><span class="vg">$?</span><span class="p">.</span><span class="nf">exitstatus</span><span class="si">}</span><span class="s2">"</span> <span class="k">unless</span> <span class="vg">$?</span><span class="p">.</span><span class="nf">success?</span></code></pre></figure>
+
+<p>Output is:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>parent writes 1
+parent writes 2
+parent writes 3
+parent writes 4
+parent writes 5
+parent writes 6
+parent writes 7
+parent writes 8
+parent writes 9
+parent writes 10
+parent writes 11
+parent writes 12
+parent writes 13
+parent writes 14child read: This is the wonderful line 1
+
+child read: This is the wonderful line 2
+parent writes 15child read: This is the wonderful line 3
+
+child read: This is the wonderful line 4
+child read: This is the wonderful line 5
+child read: This is the wonderful line 6
+parent writes 16
+child read: This is the wonderful line 7
+child read: This is the wonderful line 8
+child read: This is the wonderful line 9
+child read: This is the wonderful line 10
+parent writes 17
+child read: This is the wonderful line 11
+child read: This is the wonderful line 12
+child read: This is the wonderful line 13
+parent writes 18
+child read: This is the wonderful line 14
+child read: This is the wonderful line 15
+child read: This is the wonderful line 16
+parent writes 19
+child read: This is the wonderful line 17
+child read: This is the wonderful line 18
+parent writes 20child read: This is the wonderful line 19
+
+child read: This is the wonderful line 20
+
+</code></pre>
+</div>
+
+<p>Programm ran successfully.</p>
+
+<p>The reader sees “EOF” if the sender (more precisely: <em>all</em>
+senders) have closed the writing end of the pipe.</p>
+
+<p>Behind the scenes, a pipe is an extremely fast I/O mechanism.  In
+Linux, it is backed by a buffer of 65536 bytes (can be changed
+for a particular pipe).  Don’t know how big it is for Mac.</p>
+
+<p>File <code class="highlighter-rouge">06_pipes/fast_pipe.rb</code>:</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#!/usr/bin/env ruby</span>
+
+<span class="n">readMe</span><span class="p">,</span> <span class="n">writeMe</span> <span class="o">=</span> <span class="no">IO</span><span class="p">.</span><span class="nf">pipe</span>
+
+<span class="c1"># Parent writes, child reads</span>
+<span class="c1"># in chunks of 65536 bytes</span>
+<span class="n">child_pid</span> <span class="o">=</span> <span class="nb">fork</span>
+<span class="k">if</span> <span class="n">child_pid</span><span class="p">.</span><span class="nf">nil?</span>
+  <span class="c1"># child process</span>
+  <span class="n">writeMe</span><span class="p">.</span><span class="nf">close</span>
+  <span class="n">read_start_time</span> <span class="o">=</span> <span class="no">Time</span><span class="p">.</span><span class="nf">now</span>
+  <span class="n">total_read</span> <span class="o">=</span> <span class="mi">0</span>
+  <span class="k">while</span> <span class="n">buf</span> <span class="o">=</span> <span class="n">readMe</span><span class="p">.</span><span class="nf">read</span><span class="p">(</span><span class="mi">65536</span><span class="p">)</span>
+    <span class="n">total_read</span> <span class="o">+=</span> <span class="n">buf</span><span class="p">.</span><span class="nf">length</span>
+  <span class="k">end</span>
+  <span class="n">readMe</span><span class="p">.</span><span class="nf">close</span>
+  <span class="n">read_end_time</span> <span class="o">=</span> <span class="no">Time</span><span class="p">.</span><span class="nf">now</span>
+  <span class="n">d</span> <span class="o">=</span> <span class="n">read_end_time</span> <span class="o">-</span> <span class="n">read_start_time</span>
+  <span class="vg">$stderr</span><span class="p">.</span><span class="nf">puts</span> <span class="s2">"Total read: </span><span class="si">#{</span><span class="n">total_read</span><span class="si">}</span><span class="s2"> bytes in </span><span class="si">#{</span><span class="n">d</span><span class="si">}</span><span class="s2"> s,</span><span class="se">\n</span><span class="s2">"</span> <span class="o">+</span>
+       <span class="s2">"</span><span class="si">#{</span><span class="n">total_read</span> <span class="o">/</span> <span class="mi">1024</span><span class="o">.</span><span class="mi">0</span> <span class="o">/</span> <span class="mi">1024</span><span class="o">.</span><span class="mi">0</span> <span class="o">/</span> <span class="n">d</span><span class="si">}</span><span class="s2"> MByte/s."</span>
+  <span class="nb">exit</span> <span class="mi">0</span>
+<span class="k">end</span>
+
+<span class="c1"># parent process</span>
+<span class="n">readMe</span><span class="p">.</span><span class="nf">close</span>
+
+<span class="c1"># Produce a string 2 ** 16 = 65536 byte long</span>
+<span class="n">junk</span> <span class="o">=</span> <span class="s2">" "</span>
+<span class="p">(</span><span class="mi">1</span> <span class="p">.</span><span class="nf">.</span> <span class="mi">16</span><span class="p">).</span><span class="nf">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">i</span><span class="o">|</span>
+  <span class="n">junk</span> <span class="o">=</span> <span class="s2">"</span><span class="si">#{</span><span class="n">junk</span><span class="si">}#{</span><span class="n">junk</span><span class="si">}</span><span class="s2">"</span>
+<span class="k">end</span>
+<span class="vg">$stderr</span><span class="p">.</span><span class="nf">puts</span> <span class="s2">"junk is </span><span class="si">#{</span><span class="n">junk</span><span class="p">.</span><span class="nf">length</span><span class="si">}</span><span class="s2"> byte long"</span>
+
+<span class="p">(</span><span class="mi">1</span> <span class="p">.</span><span class="nf">.</span> <span class="mi">100000</span><span class="p">).</span><span class="nf">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">i</span><span class="o">|</span>
+  <span class="n">writeMe</span><span class="p">.</span><span class="nf">write</span> <span class="n">junk</span>
+<span class="k">end</span>
+<span class="n">writeMe</span><span class="p">.</span><span class="nf">close</span>
+
+<span class="no">Process</span><span class="p">.</span><span class="nf">wait</span> <span class="n">child_pid</span>
+<span class="k">raise</span> <span class="s2">"ERROR child: </span><span class="si">#{</span><span class="vg">$?</span><span class="p">.</span><span class="nf">exitstatus</span><span class="si">}</span><span class="s2">"</span> <span class="k">unless</span> <span class="vg">$?</span><span class="p">.</span><span class="nf">success?</span></code></pre></figure>
+
+<p>Output is:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>junk is 65536 byte long
+Total read: 6553600000 bytes in 2.243699851 s,
+2785.5775794674237 MByte/s.
+
+</code></pre>
+</div>
+
+<p>Programm ran successfully.</p>
+
+<h2 id="exercises">Exercises</h2>
+
+<ul>
+  <li>
+    <p>Temporarily remove the closing of the pipe’s write end from the
+reader in one of the sample programs.  What happens?</p>
+  </li>
+  <li>
+    <p>Reorganize the program such that the sender is the child and
+the parent reads.  Let the parent close the reading end after
+reading 120000 bytes, while the child wants to write 200000
+bytes.  What happens?</p>
+  </li>
+  <li>
+    <p>Devise a program that determines the buffer space provided by a
+pipe.  (Hint: Defer reading.  Measure the time required for
+writing.)</p>
+  </li>
+</ul>
+
+  </div>
+
+</article>
+
+
+<p><a href="07_signals.html">Next section: 07_signals.html</a></p>
+
+
+
+<p><a href="05_fork_and_open_files.html">Previous section: 05_fork_and_open_files.html</a></p>
+
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li>Do as the shell does.</li>
+          <li><a href="mailto:Andreas.Krueger@innoQ.com">Andreas.Krueger@innoQ.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <p>Workshop material for innoQ event 2016-02-25.
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>
