@@ -61,5 +61,3 @@ Experiment with exit values.  Suggestions:
   script?  A directory instead of a script?
 
 * Try calling `:`.
-
-Up to 14:30 h.

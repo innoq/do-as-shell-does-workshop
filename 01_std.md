@@ -70,5 +70,3 @@ And so on, and so forth.
 * To comply with the convention, where should your scripting
   language put information from any exception you might raise?
   Verify.
-
-Up to 14:00 h.

@@ -31,5 +31,3 @@ not provide `fork`.
 * Run the fork_exec_wait - Example on your laptop.
 
 * Port it to using `spawn`.
-
-Up to 15:15 h.

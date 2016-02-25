@@ -56,5 +56,3 @@ Have a look into
 * Non-blocking IO
 
 * Inetd
-
-Up to 16:30 h.

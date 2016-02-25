@@ -27,5 +27,3 @@ The buffer gets copied by the `fork` and so gets written later.
 To fix, `flush` the buffer.
 
 If you absolutely want to, use `syswrite` (which does not buffer).
-
-Up to 15:25 h.

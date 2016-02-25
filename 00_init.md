@@ -10,5 +10,3 @@
 
 * Those who want to translate to Python on the fly
   may want to have Python documentation open.
-
-Up to 13:40 h.
