@@ -28,3 +28,5 @@ yyi fast_pipe
 * Devise a program that determines the buffer space provided by a
   pipe.  (Hint: Defer reading.  Measure the time required for
   writing.)
+
+Up to 15:50 h.

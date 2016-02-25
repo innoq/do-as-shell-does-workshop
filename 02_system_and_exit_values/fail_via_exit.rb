@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
 
-$stderr.puts "I am failing down here, with 200, says #{Process::pid}."
+$stderr.puts "#{Process::pid} fails with 200."
 
 exit(200)

@@ -1,10 +1,10 @@
 #!/usr/bin/env ruby
 
-$stderr.puts "About to call hello, I'm process #{Process::pid}."
+$stderr.puts "#{Process::pid} calls ./hello.rb."
 
 system('./hello.rb')
 
-$stderr.puts "Done calling hello, back in #{Process::pid}."
+$stderr.puts "Back in #{Process::pid}."
 
 
 

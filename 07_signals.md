@@ -50,3 +50,4 @@ yyi catch_signal
 * Write a program that sends a `STOP` and later a `CONT` to its
   child.
 
+Up to 16:10 h.

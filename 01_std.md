@@ -24,6 +24,10 @@ architecture.
 
 In `bash` and similar shells:
 
+`command1 | command2` creates a pipe and hooks up the writing end
+to `stdout` of `command1` and the reading end to `stdin` of
+`command2`.  (This is the prototypical filter pipeline.)
+
 `command < file` redirects `stdin` from file.
 
 `command < /dev/null` essentially closes `stdin` (any read will
@@ -35,11 +39,7 @@ return EOF).
 
 `command 2> file` redirects `stderr` to file.
 
-`command 2> /dev/null` ignores `stderr` (don't do that).
-
-`command1 | command2` creates a pipe and hooks up the writing end
-to `stdout` of `command1` and the reading end to `stdin` of
-`command2`.  (This is the prototypical filter pipeline.)
+`command 2> /dev/null` ignores `stderr` *don't do that*.
 
 `command1 2>&1` redirects `stderr` to add its stuff to wherever
 `stdout` writes to.
@@ -71,3 +71,4 @@ And so on, and so forth.
   language put information from any exception you might raise?
   Verify.
 
+Up to 14:00 h.

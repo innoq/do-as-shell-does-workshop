@@ -1,4 +1,4 @@
 #!/usr/bin/env ruby
 
-$stderr.write "Hello, "
-$stdout.puts "world!\n"
+$stdout.write "Hello, "
+$stderr.puts "world!"

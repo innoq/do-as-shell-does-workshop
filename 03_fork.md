@@ -77,3 +77,5 @@ Mac) to prove it, all others sleep 1 second.
 Change your program so that 100 copies are done at each state,
 leading to a total of 10000 processes.  Let them sleep for 15
 seconds.
+
+Up to 15:00 h.

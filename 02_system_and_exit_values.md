@@ -34,7 +34,7 @@ yyi fail_via_exception
 
 yyi system_fail_ignore
 
-Notice: The caller never notices anything is wrong.
+Notice: **The caller never notices anything is wrong.**
 
 ### Demo handling exit values
 
@@ -61,3 +61,5 @@ Experiment with exit values.  Suggestions:
   script?  A directory instead of a script?
 
 * Try calling `:`.
+
+Up to 14:30 h.
