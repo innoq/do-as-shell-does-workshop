@@ -22,6 +22,7 @@ if child_pid.nil?
   exec 'od', '-c'
 end
 
+readMe.close
 writeMe.puts "\0\t\nhello\vworld.\n"
 writeMe.close
 
