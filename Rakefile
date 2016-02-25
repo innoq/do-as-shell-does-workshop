@@ -30,7 +30,7 @@ layout: default
     @sections.each  do |s|
       if s =~ /\A\d\d\_(.+)\Z/
         title = $1
-        outf.write "* [#{title}](#{s})\n"
+        outf.write "* [#{title}](#{s}.html)\n"
       else
         raise "Unexpected section #{s}"
       end
@@ -40,8 +40,8 @@ end
 
 @sections.each_index do |i|
   s = @sections[i]
-  next_s = (i+1 < @sections.length ? @sections[i+1] : nil)
-  previous_s = (0 <= i-1 ? @sections[i-1] : nil)
+  next_s = (i+1 < @sections.length ? "#{@sections[i+1]}.html" : nil)
+  previous_s = (0 <= i-1 ? "#{@sections[i-1]}.html" : nil)
   # task "#{s}_dir".to_sym => :stuff_dir do
   #   targetdir = "jekyll/_includes/stuff/#{s}"
   #   FileUtils.mkdir_p targetdir
